@@ -1,11 +1,21 @@
-// This compiles to the Program class with a static Main method.
+﻿// This compiles to the Program class with a static Main method.
 // It is the entry point for our API. When we start the API, it starts here.
 // When this is done runnning, the applicaiton quits.
+
+// Prior to .NET 5, Web APIs used an open source library called NewtonSoft.Json
+// In .NET 5 + they use their own. This System.Test.Json
+using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // No brainer. Always do this.
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // This is optimal, but talk to the team first
+}
+);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,6 +33,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers(); // CC - This is where routing table is created
 
 app.Run(); // CC - This is Kestrel Web Server running!

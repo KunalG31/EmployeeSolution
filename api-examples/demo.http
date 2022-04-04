@@ -1,0 +1,14 @@
+
+### GET Status
+
+GET http://localhost:1337/status Http/1.1
+Accept: application/json
+
+### Add A Product
+Accept: application/json
+
+{
+    "id": "999",
+    "description": "Super cool thing you will want",
+    "price": 20.99
+}
