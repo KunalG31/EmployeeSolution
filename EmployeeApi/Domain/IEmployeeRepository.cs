@@ -6,4 +6,5 @@ public interface IEmployeeRepository
 {
     Task<GetEmployeeDetailsResponse?> GetEmployeeByIdAsync(ObjectId id);
     Task<GetCollectionResponse<GetEmployeeSummaryResponse>> GetEmployeesAsync();
+    Task<GetEmployeeDetailsResponse> HireEmployee(PostEmployeeRequest request);
 }

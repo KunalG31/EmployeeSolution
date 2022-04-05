@@ -19,7 +19,7 @@ public class Employee
     [BsonElement("phone")]
     public string Phone { get; set; }
     [BsonElement("department")]
-    public string Departmant { get; set; }
+    public string Department { get; set; }
     [BsonElement("salary")]
     public decimal Salary { get; set; }
 
