@@ -5,8 +5,14 @@
 // Prior to .NET 5, Web APIs used an open source library called NewtonSoft.Json
 // In .NET 5 + they use their own. This System.Test.Json
 using System.Text.Json.Serialization;
+using EmployeeApi.Adapters;
+using EmployeesApi;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRouting(options =>
+{
+    options.ConstraintMap.Add("bsonid", typeof(BsonIdConstraint));
+});
 
 // Add services to the container.
 
@@ -19,6 +25,16 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+// Domain Services
+builder.Services.AddScoped<IEmployeeRepository, MongoDbEmployeeRepository>();
+
+// Adapter Services
+builder.Services.AddSingleton<MongoDbContext>(); // Created "lazily"
+//var mongoDbContext = new MongoDbContext();
+//// configure this thing, etc.
+//builder.Services.AddSingleton(mongoDbContext);
 
 // CC [Class Comment] -Above here is configuring "behind the scenes stuff
 var app = builder.Build();
