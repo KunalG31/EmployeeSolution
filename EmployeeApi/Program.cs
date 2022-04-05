@@ -5,6 +5,7 @@
 // Prior to .NET 5, Web APIs used an open source library called NewtonSoft.Json
 // In .NET 5 + they use their own. This System.Test.Json
 using System.Text.Json.Serialization;
+using EmployeeApi;
 using EmployeeApi.Adapters;
 using EmployeesApi;
 
@@ -13,6 +14,10 @@ builder.Services.AddRouting(options =>
 {
     options.ConstraintMap.Add("bsonid", typeof(BsonIdConstraint));
 });
+
+// Configuration Stuff
+
+builder.Services.Configure<MongoConnectionOptions>(builder.Configuration.GetSection(MongoConnectionOptions.SectionName));
 
 var thingy = builder.Configuration.GetValue<string>("url");
 Console.WriteLine("Here is the url:" + thingy);

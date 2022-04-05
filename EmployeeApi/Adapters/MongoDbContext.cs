@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using MongoDB.Driver.Core.Events;
 
 namespace EmployeeApi.Adapters;
@@ -7,18 +8,23 @@ public class MongoDbContext
 {
     private readonly IMongoCollection<Employee> _employeesCollection;
     private readonly ILogger<MongoDbContext> _logger;
-    public MongoDbContext(ILogger<MongoDbContext> logger)
+    
+    public MongoDbContext(ILogger<MongoDbContext> logger, IOptions<MongoConnectionOptions> connectionOptions) 
     {
         _logger = logger;
-        var clientSettings = MongoClientSettings.FromConnectionString("mongodb://admin:TokyoJoe138!@localhost:27017/");
+        var clientSettings = MongoClientSettings.FromConnectionString(connectionOptions.Value.ConnectionString);
         // Maybe only turn this on during development .... more later.
-        clientSettings.ClusterConfigurator = db =>
+        if (connectionOptions.Value.LogCommands)
         {
-            db.Subscribe<CommandStartedEvent>(e =>
+            clientSettings.ClusterConfigurator = db =>
             {
-                _logger.LogInformation($"Running {e.CommandName} - the command looks like this {e.Command.ToJson()}");
-            });
-        };
+                db.Subscribe<CommandStartedEvent>(e =>
+                {
+                    _logger.LogInformation($"Running {e.CommandName} - the command looks like this {e.Command.ToJson()}");
+                });
+            };
+        }
+        
         var conn = new MongoClient(clientSettings);
 
         var db = conn.GetDatabase("employees_db");
