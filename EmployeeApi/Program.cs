@@ -14,6 +14,9 @@ builder.Services.AddRouting(options =>
     options.ConstraintMap.Add("bsonid", typeof(BsonIdConstraint));
 });
 
+var thingy = builder.Configuration.GetValue<string>("url");
+Console.WriteLine("Here is the url:" + thingy);
+
 // Add services to the container.
 
 builder.Services.AddControllers().AddJsonOptions(options =>

@@ -12,7 +12,7 @@ public class MongoDbEmployeeRepository : IEmployeeRepository
     {
         _context = context;
     }
-    public async Task<GetEmployeeDetailsResponse> GetEmployeeByIdAsync(ObjectId id)
+    public async Task<GetEmployeeDetailsResponse?> GetEmployeeByIdAsync(ObjectId id)
     {
         // In the context we have employees, but we need a GetEmployeeDetailResponse
         var projection = Builders<Employee>.Projection.Expression(emp =>
@@ -23,5 +23,17 @@ public class MongoDbEmployeeRepository : IEmployeeRepository
             .Project(projection)
             .SingleOrDefaultAsync(); // Todo
         return response;
+    }
+
+    public async Task<GetCollectionResponse<GetEmployeeSummaryResponse>> GetEmployeesAsync()
+    {
+        var projection = Builders<Employee>.Projection.Expression(emp => new GetEmployeeSummaryResponse(emp.Id.ToString(), emp.FirstName,
+            emp.LastName, emp.Departmant));
+
+        var employees = await _context.GetEmpoyeeCollection().Find(_ => true) // Give them all to me
+            .Project(projection)
+            .ToListAsync();
+
+        return new GetCollectionResponse<GetEmployeeSummaryResponse>() {  Data = employees };
     }
 }
