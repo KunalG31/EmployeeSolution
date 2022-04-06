@@ -9,11 +9,13 @@ public class MongoDbEmployeeRepository : IEmployeeRepository
 {
     private readonly MongoDbContext _context;
     private readonly FilterDefinition<Employee>  _onlyActiveEmployees;
+    private readonly ILookupSalary _salaryLookup;
 
-    public MongoDbEmployeeRepository(MongoDbContext context)
+    public MongoDbEmployeeRepository(MongoDbContext context, ILookupSalary salaryLookup)
     {
         _context = context;
         _onlyActiveEmployees = Builders<Employee>.Filter.Where(emp => emp.InActive != true);
+        _salaryLookup = salaryLookup;
     }
 
     public async Task<bool> ChangePropertyAsync<TField>(ObjectId id, Expression<Func<Employee, TField>> field, TField value)
@@ -73,6 +75,7 @@ public class MongoDbEmployeeRepository : IEmployeeRepository
 
     public async Task<GetEmployeeDetailsResponse> HireEmployee(PostEmployeeRequest request)
     {
+        decimal salary = await _salaryLookup.GetSalaryForNewHireAsync(request.Department);
         var employeeToAdd = new Employee
         {
             FirstName = request.FirstName,
@@ -80,7 +83,7 @@ public class MongoDbEmployeeRepository : IEmployeeRepository
             Phone = request.Phone,
             Email = request.Email,
             Department = request.Department,
-            Salary = 100000
+            Salary = salary
         };
         await _context.GetEmployeeCollection().InsertOneAsync(employeeToAdd);
 

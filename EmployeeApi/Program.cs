@@ -48,12 +48,18 @@ builder.Services.AddSwaggerGen();
 
 // Domain Services
 builder.Services.AddScoped<IEmployeeRepository, MongoDbEmployeeRepository>();
+builder.Services.AddScoped<ILookupSalary, RpcSalaryLookup>();
 
 // Adapter Services
 builder.Services.AddSingleton<MongoDbContext>(); // Created "lazily"
 //var mongoDbContext = new MongoDbContext();
 //// configure this thing, etc.
 //builder.Services.AddSingleton(mongoDbContext);
+
+builder.Services.AddHttpClient<SalaryApiContext>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("salaryApiUrl"));
+});
 
 // CC [Class Comment] -Above here is configuring "behind the scenes stuff
 var app = builder.Build();
