@@ -12,6 +12,57 @@ public class EmployeesController : ControllerBase
         _employeeRepository = employeeRepository;
     }
 
+
+    //[HttpPut("{id:bsonid}/email")]
+    //public async Task<ActionResult> UpdateEmail(string id, [FromBody]string email)
+    //{
+    //    var objectId = ObjectId.Parse(id);
+    //    bool found = await _employeeRepository.ChangeEmailAsync(objectId, email);
+    //    return found switch
+    //    {
+    //        true => Accepted(),
+    //        false => NotFound()
+    //    };
+    //}
+
+    [HttpPut("{id:bsonid}/email")]
+    public async Task<ActionResult> UpdateEmail(string id, [FromBody] string email)
+    {
+        var objectId = ObjectId.Parse(id); // try catch.
+        bool found = await _employeeRepository.ChangePropertyAsync(objectId, emp => emp.Email, email);
+
+        return found switch
+        {
+            true => Accepted(),
+            false => NotFound()
+        };
+
+
+    }
+
+    [HttpPut("{id:bsonid}/phone")]
+    public async Task<ActionResult> UpdatePhone(string id, [FromBody] string phone)
+    {
+        var objectId = ObjectId.Parse(id); // try catch.
+        bool found = await _employeeRepository.ChangePropertyAsync(objectId, emp => emp.Phone, phone);
+
+        return found switch
+        {
+            true => Accepted(),
+            false => NotFound()
+        };
+
+    }
+
+
+    [HttpDelete("{id:bsonid}")]
+    public async Task<ActionResult> RemoveEmployee(string id)
+    {
+        var objectId = ObjectId.Parse(id);
+        await _employeeRepository.FireAsync(objectId);
+        return NoContent();
+    }
+
     [ResponseCache(Duration = 20, Location = ResponseCacheLocation.Client)] // this is for the thing we are sending down
     [HttpPost]
     public async Task<ActionResult> AddEmployee([FromBody] PostEmployeeRequest request)

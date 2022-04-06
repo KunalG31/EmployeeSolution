@@ -23,5 +23,7 @@ public class Employee
     [BsonElement("salary")]
     public decimal Salary { get; set; }
 
+    [BsonElement("inActive")]
+    public bool InActive { get; set; } = false;
 
 }

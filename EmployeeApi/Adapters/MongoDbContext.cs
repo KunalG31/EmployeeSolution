@@ -32,5 +32,5 @@ public class MongoDbContext
         _employeesCollection = db.GetCollection<Employee>("employees");
     }
 
-    public IMongoCollection<Employee> GetEmpoyeeCollection() => _employeesCollection;
+    public IMongoCollection<Employee> GetEmployeeCollection() => _employeesCollection;
 }

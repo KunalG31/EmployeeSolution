@@ -19,8 +19,19 @@ builder.Services.AddRouting(options =>
 
 builder.Services.Configure<MongoConnectionOptions>(builder.Configuration.GetSection(MongoConnectionOptions.SectionName));
 
-var thingy = builder.Configuration.GetValue<string>("url");
-Console.WriteLine("Here is the url:" + thingy);
+//Debuggign example of reading value from AppSettings.Development.json file
+//var thingy = builder.Configuration.GetValue<string>("url");
+//Console.WriteLine("Here is the url:" + thingy);
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(pol =>
+    {
+        pol.AllowAnyOrigin();
+        pol.AllowAnyHeader();
+        pol.AllowAnyMethod();
+    });
+});
 
 // Add services to the container.
 
@@ -55,8 +66,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();  // CC - When using Cors. Seems like needed in Angular apps
 app.UseAuthorization();
 
 app.MapControllers(); // CC - This is where routing table is created
-
 app.Run(); // CC - This is Kestrel Web Server running!
