@@ -56,10 +56,12 @@ builder.Services.AddSingleton<MongoDbContext>(); // Created "lazily"
 //// configure this thing, etc.
 //builder.Services.AddSingleton(mongoDbContext);
 
+// Typed Client
 builder.Services.AddHttpClient<SalaryApiContext>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("salaryApiUrl"));
-});
+}).AddPolicyHandler(InClusterPolicies.GetRetryPolicy());
+
 
 // CC [Class Comment] -Above here is configuring "behind the scenes stuff
 var app = builder.Build();
